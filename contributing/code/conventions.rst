@@ -92,7 +92,7 @@ A feature is marked as deprecated by adding a ``@deprecated`` phpdoc to
 relevant classes, methods, properties, ...::
 
     /**
-     * @deprecated since version 2.8, to be removed in 3.0. Use XXX instead.
+     * @deprecated since version 5.1, to be removed in 6.0. Use XXX instead.
      */
 
 The deprecation message should indicate the version when the class/method was
@@ -103,22 +103,19 @@ A PHP ``E_USER_DEPRECATED`` error must also be triggered to help people with
 the migration starting one or two minor versions before the version where the
 feature will be removed (depending on the criticality of the removal)::
 
-    @trigger_error('XXX() is deprecated since version 2.8 and will be removed in 3.0. Use XXX instead.', E_USER_DEPRECATED);
+    trigger_deprecation('vendor-name/package-name', '5.1', 'The "%s" class is deprecated , use "%s" instead.', Deprecated::class, Replacement::class);
 
-Without the `@-silencing operator`_, users would need to opt-out from deprecation
-notices. Silencing swaps this behavior and allows users to opt-in when they are
-ready to cope with them (by adding a custom error handler like the one used by
-the Web Debug Toolbar or by the PHPUnit bridge).
+The :function:`trigger_deprecation` internally use :phpfunction:`assert`. This means you should use `zend.assertions` to disable deprecations in production.
 
 .. _`@-silencing operator`: https://php.net/manual/en/language.operators.errorcontrol.php
 
-When deprecating a whole class the ``trigger_error()`` call should be placed
+When deprecating a whole class the ``trigger_deprecation()`` call should be placed
 between the namespace and the use declarations, like in this example from
 `ArrayParserCache`_::
 
     namespace Symfony\Component\ExpressionLanguage\ParserCache;
 
-    @trigger_error('The '.__NAMESPACE__.'\ArrayParserCache class is deprecated since version 3.2 and will be removed in 4.0. Use the Symfony\Component\Cache\Adapter\ArrayAdapter class instead.', E_USER_DEPRECATED);
+    trigger_deprecation('symfony/expression-language', '3.2', 'The "%s" class is deprecated, use "%s" instead.', __CLASS__, Symfony\Component\Cache\Adapter\ArrayAdapter::class);
 
     use Symfony\Component\ExpressionLanguage\ParsedExpression;
 
